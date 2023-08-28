@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "postgresqlfacil"
-version = "0.1.2"
+version = "0.1.4"
 description = ""
 authors = ["eduardo.barreto <edugobarreto@gmail.com>"]
 license = "MIT"
