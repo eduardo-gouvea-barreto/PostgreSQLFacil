@@ -118,6 +118,30 @@ class ConectorPostgreSQL:
             print(erro)
             return False
 
+    def executa_query_delete(self, query: str) -> bool:
+        """
+        Recebe um Delete Statement que retorna um bool
+
+        Em caso de erro, retorna 0
+
+        Exemplo:
+            >>> delete = SQL.executa_query_update(
+            >>>     'DELETE FROM ... WHERE ...;'
+            >>> )
+            >>> delete
+            True
+        """
+
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(query)
+            cursor.close()
+            return True
+
+        except Exception as erro:
+            print(erro)
+            return False
+
     @staticmethod
     def transforma_df_em_insert_statement(
         df: pd.DataFrame, tabela: str
