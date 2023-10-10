@@ -81,10 +81,12 @@ class ConectorPostgreSQL:
         try:
             cursor = self.con.cursor()
             cursor.execute(query)
-            cursor.close()
             if returning:
-                return cursor.fetchone()[0]
+                returning_value = cursor.fetchone()[0]
+                cursor.close()
+                return returning_value
             else:
+                cursor.close()
                 return True
 
         except Exception as erro:
