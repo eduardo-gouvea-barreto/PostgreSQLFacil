@@ -158,6 +158,7 @@ class ConectorPostgreSQL:
             for index, coluna in enumerate(df.columns):
                 value = getattr(linha, coluna)
                 if isinstance(value, str):
+                    value = value.replace("'", "''")
                     values += f"'{value}'"
                 elif isinstance(value, datetime.date):
                     values += f"'{value.isoformat()}'"
