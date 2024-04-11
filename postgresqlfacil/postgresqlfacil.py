@@ -150,7 +150,7 @@ class ConectorPostgreSQL:
     ) -> str:
         query = f"""
             INSERT INTO {tabela}
-            ({",".join(x for x in df.columns)})
+            ("{'","'.join(x for x in df.columns)}")
             VALUES
             """
         for linha in df.itertuples():
