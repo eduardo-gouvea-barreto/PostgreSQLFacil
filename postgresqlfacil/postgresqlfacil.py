@@ -161,7 +161,10 @@ class ConectorPostgreSQL:
                     value = value.replace("'", "''")
                     values += f"'{value}'"
                 elif isinstance(value, datetime.date):
-                    values += f"'{value.isoformat()}'"
+                    if pd.isna(value):
+                        values += "NULL"
+                    else:
+                        values += f"'{value.isoformat()}'"
                 elif value is None or math.isnan(value):
                     values += "NULL"
                 else:
