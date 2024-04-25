@@ -1,9 +1,11 @@
+from dataclasses import dataclass
 import datetime
 import math
 import pandas as pd
 import psycopg2
 
 
+@dataclass
 class ConectorPostgreSQL:
     """
     Conector do Banco de Dados.
@@ -13,15 +15,20 @@ class ConectorPostgreSQL:
         >>>     ...
     """
 
-    def __init__(self, database, user, password, host, port):
-        config = {
-            "database": database,
-            "user": user,
-            "password": password,
-            "host": host,
-            "port": port,
-        }
-        self.con = psycopg2.connect(**config)
+    database: str
+    user: str
+    password: str
+    host: str
+    port: int
+
+    def __post_init__(self):
+        self.con = psycopg2.connect(**{
+            "database": self.database,
+            "user": self.user,
+            "password": self.password,
+            "host": self.host,
+            "port": self.port,
+        })
         self.con.autocommit = True
 
         cursor = self.con.cursor()
