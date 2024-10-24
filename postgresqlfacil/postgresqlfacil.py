@@ -22,13 +22,15 @@ class ConectorPostgreSQL:
     port: int
 
     def __post_init__(self):
-        self.con = psycopg2.connect(**{
-            "database": self.database,
-            "user": self.user,
-            "password": self.password,
-            "host": self.host,
-            "port": self.port,
-        })
+        self.con = psycopg2.connect(
+            **{
+                "database": self.database,
+                "user": self.user,
+                "password": self.password,
+                "host": self.host,
+                "port": self.port,
+            }
+        )
         self.con.autocommit = True
 
         cursor = self.con.cursor()
@@ -152,35 +154,24 @@ class ConectorPostgreSQL:
             return False
 
     @staticmethod
-    def transforma_df_em_insert_statement(
-        df: pd.DataFrame, tabela: str
-    ) -> str:
-        query = f"""
-            INSERT INTO {tabela}
-            ("{'","'.join(x for x in df.columns)}")
-            VALUES
-            """
-        for linha in df.itertuples():
-            values = " ("
-            for index, coluna in enumerate(df.columns):
-                value = getattr(linha, coluna)
-                if isinstance(value, str):
-                    value = value.replace("'", "''")
-                    values += f"'{value}'"
-                elif isinstance(value, datetime.date):
-                    if pd.isna(value):
-                        values += "NULL"
-                    else:
-                        values += f"'{value.isoformat()}'"
-                elif value is None or math.isnan(value):
-                    values += "NULL"
-                else:
-                    values += str(value)
+    def transforma_df_em_insert_statement(df: pd.DataFrame, tabela: str) -> str:
+        def formata_valor(value):
+            if isinstance(value, str):
+                return f"""'{value.replace("'", "''")}'"""
+            elif isinstance(value, datetime.date):
+                return f"'{value.isoformat()}'" if not pd.isna(value) else "NULL"
+            elif value is None or (isinstance(value, float) and math.isnan(value)):
+                return "NULL"
+            else:
+                return str(value)
 
-                if index != len(df.columns) - 1:
-                    values += ", "
+        colunas = ",".join(f'"{col}"' for col in df.columns)
+        query = f"INSERT INTO {tabela} ({colunas}) VALUES "
 
-            query += values + "), "
+        valores = [
+            f"({', '.join(formata_valor(valor) for valor in linha)})"
+            for linha in df.itertuples(index=False, name=None)
+        ]
 
-        query = query[:-2]
+        query += ", ".join(valores)
         return query
