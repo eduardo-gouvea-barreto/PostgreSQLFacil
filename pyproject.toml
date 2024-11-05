@@ -9,11 +9,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 pandas = "^2.0.3"
-psycopg2 = { version = "^2.9.7", optional = true }
 
 [tool.poetry.extras]
+psycopg2 = ["psycopg2"]
 psycopg2-binary = ["psycopg2-binary"]
-
 
 [build-system]
 requires = ["poetry-core"]
